@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WaveDefense – Flood Safety</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@500;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --prussian: #003153;
+      --midnight: #1B4332;
+      --water: #4FC3F7;
+      --sand: #E8D5B7;
+      --seasalt: #F4F9F4;
+      --accent: #00B4D8;
+      --danger: #E63946;
+      --warn: #F4A261;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--prussian);
+      color: var(--seasalt);
+      overflow-x: hidden;
+    }
+
+    
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 999;
+      background: rgba(0,49,83,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(79,195,247,0.2);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; letter-spacing: 2px;
+      color: var(--water);
+    }
+    .logo span { color: var(--sand); }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-links a {
+      text-decoration: none; color: var(--seasalt);
+      padding: 0.4rem 1rem; border-radius: 20px;
+      font-size: 0.9rem; font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      background: var(--water); color: var(--prussian);
+    }
+
+    #home {
+      min-height: 100vh;
+      background:
+        linear-gradient(to bottom, rgba(0,49,83,0.85) 0%, rgba(0,49,83,0.6) 60%, rgba(0,49,83,0.95) 100%),
+        url('https://images.unsplash.com/photo-1547683905-f686c993aae4?w=1600&q=80') center/cover no-repeat;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 6rem 2rem 4rem;
+      position: relative;
+    }
+    .hero-badge {
+      background: rgba(79,195,247,0.15);
+      border: 1px solid var(--water);
+      color: var(--water); border-radius: 20px;
+      padding: 0.3rem 1rem; font-size: 0.8rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 7rem);
+      line-height: 1; letter-spacing: 3px;
+      color: var(--seasalt);
+    }
+    .hero-title span { color: var(--water); }
+    .hero-sub {
+      margin-top: 1rem; font-size: 1.1rem;
+      color: var(--sand); max-width: 520px;
+      line-height: 1.7;
+    }
+    .hero-btns { margin-top: 2.5rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .btn {
+      padding: 0.8rem 2rem; border-radius: 30px;
+      font-weight: 600; font-size: 0.95rem;
+      text-decoration: none; cursor: pointer;
+      border: none; transition: all 0.25s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary { background: var(--water); color: var(--prussian); }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--seasalt); border: 2px solid var(--seasalt); }
+    .btn-outline:hover { background: var(--seasalt); color: var(--prussian); transform: translateY(-2px); }
+
+    .wave-divider {
+      width: 100%; overflow: hidden; line-height: 0;
+      margin-top: -2px;
+    }
+    .wave-divider svg { display: block; }
+
+    .stats {
+      background: var(--midnight);
+      display: flex; justify-content: center;
+      gap: 3rem; flex-wrap: wrap;
+      padding: 2rem;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem; color: var(--water);
+    }
+    .stat-label { font-size: 0.8rem; color: var(--sand); letter-spacing: 1px; }
+
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+
+    .section-tag {
+      font-size: 0.75rem; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--water);
+      margin-bottom: 0.5rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      line-height: 1.1; margin-bottom: 1rem;
+    }
+    .section-desc { color: var(--sand); max-width: 580px; line-height: 1.8; margin-bottom: 3rem; }
+
+    #precautions { background: #00253f; }
+    .phase-tabs {
+      display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .phase-tab {
+      padding: 0.6rem 1.5rem; border-radius: 25px;
+      border: 2px solid rgba(79,195,247,0.3);
+      background: transparent; color: var(--seasalt);
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+    }
+    .phase-tab.active, .phase-tab:hover {
+      background: var(--water); color: var(--prussian); border-color: var(--water);
+    }
+    .phase-content { display: none; }
+    .phase-content.active { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.2rem; }
+
+    .tip-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(79,195,247,0.15);
+      border-radius: 16px; padding: 1.5rem;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .tip-card:hover { transform: translateY(-4px); border-color: var(--water); }
+    .tip-icon { font-size: 2rem; margin-bottom: 0.8rem; }
+    .tip-card h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--water); }
+    .tip-card p { font-size: 0.88rem; color: var(--sand); line-height: 1.6; }
+
+    .kit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .kit-item {
+      background: rgba(79,195,247,0.08);
+      border: 1px solid rgba(79,195,247,0.2);
+      border-radius: 12px; padding: 1rem 1.2rem;
+      display: flex; align-items: center; gap: 0.8rem;
+      font-size: 0.9rem;
+    }
+    .kit-item span:first-child { font-size: 1.4rem; }
+
+    
+    .phase-image {
+      width: 100%; max-height: 280px; object-fit: cover;
+      border-radius: 16px; margin-bottom: 2rem;
+      border: 1px solid rgba(79,195,247,0.2);
+    }
+
+   
+    #reports { background: var(--prussian); }
+    .report-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start; }
+    @media(max-width:700px){ .report-layout { grid-template-columns: 1fr; } }
+
+    .report-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.85rem; color: var(--sand); letter-spacing: 0.5px; }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(79,195,247,0.25);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      color: var(--seasalt); font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--water); }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+    .form-group select option { background: var(--prussian); }
+
+    .reports-feed h3 { color: var(--water); margin-bottom: 1rem; font-size: 1.1rem; }
+    .report-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(79,195,247,0.15);
+      border-radius: 12px; padding: 1rem 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+    .report-card .rc-top { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+    .report-card .rc-loc { color: var(--water); font-weight: 600; font-size: 0.9rem; }
+    .report-card .rc-time { color: var(--sand); font-size: 0.78rem; }
+    .report-card .rc-severity {
+      display: inline-block; padding: 0.15rem 0.6rem;
+      border-radius: 10px; font-size: 0.75rem; font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+    .sev-high { background: rgba(230,57,70,0.2); color: #ff6b6b; }
+    .sev-medium { background: rgba(244,162,97,0.2); color: var(--warn); }
+    .sev-low { background: rgba(79,195,247,0.2); color: var(--water); }
+    .report-card .rc-desc { font-size: 0.85rem; color: var(--sand); }
+
+    #map-section { background: var(--midnight); }
+    .map-search { display: flex; gap: 0.8rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .map-search input {
+      flex: 1; min-width: 220px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(79,195,247,0.3);
+      border-radius: 30px; padding: 0.8rem 1.4rem;
+      color: var(--seasalt); font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem; outline: none;
+    }
+    .map-search input:focus { border-color: var(--water); }
+    .map-search button {
+      padding: 0.8rem 1.8rem; border-radius: 30px;
+      background: var(--water); color: var(--prussian);
+      border: none; cursor: pointer; font-weight: 700;
+      font-size: 0.9rem; transition: background 0.2s;
+    }
+    .map-search button:hover { background: var(--accent); }
+    .map-hint { color: var(--sand); font-size: 0.85rem; margin-bottom: 1rem; }
+
+   
+    footer {
+      background: #001a2e;
+      border-top: 1px solid rgba(79,195,247,0.1);
+      padding: 2.5rem 2rem; text-align: center;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem; color: var(--water); letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+    .footer-meta { color: var(--sand); font-size: 0.85rem; line-height: 1.8; }
+    .footer-meta strong { color: var(--seasalt); }
+
+   
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .hero-badge, .hero-title, .hero-sub, .hero-btns {
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero-title { animation-delay: 0.1s; }
+    .hero-sub   { animation-delay: 0.2s; }
+    .hero-btns  { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+
+<nav>
+  <div class="logo">Wave<span>Defense</span></div>
+  <div class="nav-links">
+    <a href="#home" class="active"> Home</a>
+    <a href="#precautions"> Precautions</a>
+    <a href="#reports"> Reports</a>
+    <a href="#map-section"> Map</a>
+  </div>
+</nav>
+
+<section id="home">
+  <div class="hero-badge"> Flood Safety </div>
+  <h1 class="hero-title">Wave<span>Defense</span></h1>
+  <p class="hero-sub">
+    Your complete guide to staying safe before, during and after a flood. 
+    Real tips. Real locations. Real impact.
+  </p>
+  <div class="hero-btns">
+    <a href="#precautions" class="btn btn-primary"> Precautions</a>
+    <a href="#reports" class="btn btn-outline"> Report Flood</a>
+  </div>
+</section>
+
+
+<div class="wave-divider">
+  <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:60px;width:100%;">
+    <path d="M0,30 C360,60 1080,0 1440,30 L1440,60 L0,60 Z" fill="#1B4332"/>
+  </svg>
+</div>
+
+
+<div class="stats">
+  <div class="stat"><div class="stat-num"> 5,750+</div><div class="stat-label"> Total Flood Since 2010 </div></div>
+  <div class="stat"><div class="stat-num"> 1,750</div><div class="stat-label">Lives Lost 2022 Floods</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">Phases — Before / During / After</div></div>
+  
+</div>
+
+
+<section id="precautions">
+  <div class="section-inner">
+    <p class="section-tag"> Safety Guide</p>
+    <h2 class="section-title">Flood Precautions</h2>
+    <p class="section-desc">Select a phase to see what you should do. Knowing this can save your life and your family's life. </p>
+
+    <div class="phase-tabs">
+      <button class="phase-tab active" onclick="showPhase('before', this)"> Before Flood</button>
+      <button class="phase-tab" onclick="showPhase('during', this)">  During Flood</button>
+      <button class="phase-tab" onclick="showPhase('after', this)"> After Flood</button>
+      <button class="phase-tab" onclick="showPhase('kit', this)"> Emergency Kit</button>
+    </div>
+
+    <!-- BEFORE -->
+    <div class="phase-content active" id="phase-before">
+      
+      <div class="tip-card"><div class="tip-icon">📻</div><h3>Stay Informed</h3><p>Monitor NDMA alerts, local radio, and weather apps. Sign up for SMS warnings in your area.</p></div>
+      <div class="tip-card"><div class="tip-icon">🗺️</div><h3>Know Your Zone</h3><p>Find out if your home is in a flood-prone area. Know the nearest high ground and evacuation route.</p></div>
+      <div class="tip-card"><div class="tip-icon">📄</div><h3>Secure Documents</h3><p>Put CNICs, property papers, and passports in a waterproof bag. Keep digital copies on your phone.</p></div>
+      <div class="tip-card"><div class="tip-icon">🔌</div><h3>Power Safety</h3><p>Know how to turn off electricity, gas, and water at the main switch. Practice it with your family.</p></div>
+      <div class="tip-card"><div class="tip-icon">🏠</div><h3>Protect Your Home</h3><p>Move valuables to upper floors. Use sandbags at doors. Clear gutters and drains near your house.</p></div>
+      <div class="tip-card"><div class="tip-icon">👨‍👩‍👧</div><h3>Family Plan</h3><p>Decide a meeting point if you get separated. Share your plan with neighbours and relatives.</p></div>
+    </div>
+
+    <!-- DURING -->
+    <div class="phase-content" id="phase-during">
+      
+      <div class="tip-card"><div class="tip-icon">🏃</div><h3>Evacuate Immediately</h3><p>If authorities say leave — LEAVE. Do not wait. Take your emergency kit and go to higher ground.</p></div>
+      <div class="tip-card"><div class="tip-icon">🚫</div><h3>Never Walk in Floodwater</h3><p>Even 15cm of fast water can knock you down. Water hides open drains, broken roads, and wires.</p></div>
+      <div class="tip-card"><div class="tip-icon">🚗</div><h3>Avoid Driving</h3><p>Most flood deaths happen in vehicles. If your car stalls in water, leave it and move to high ground.</p></div>
+      <div class="tip-card"><div class="tip-icon">⚡</div><h3>Stay Away from Power Lines</h3><p>Flooded areas may have live wires. Never touch electrical equipment if you are wet or standing in water.</p></div>
+      <div class="tip-card"><div class="tip-icon">📱</div><h3>Save Battery</h3><p>Keep calls short. Use text/WhatsApp. Charge your phone as soon as power is available.</p></div>
+      <div class="tip-card"><div class="tip-icon">🆘</div><h3>Call for Help</h3><p>Contact your family members if you are in danger.</p></div>
+    </div>
+
+    <!-- AFTER -->
+    <div class="phase-content" id="phase-after">
+      
+      <div class="tip-card"><div class="tip-icon">🏚️</div><h3>Check Before Entering</h3><p>Do not enter your home until authorities say it is safe. Check for structural damage, gas leaks, and unstable walls.</p></div>
+      <div class="tip-card"><div class="tip-icon">💧</div><h3>Water Safety</h3><p>Do not drink tap water until confirmed safe. Use bottled water or boil for at least 1 minute before drinking.</p></div>
+      <div class="tip-card"><div class="tip-icon">🧹</div><h3>Clean Carefully</h3><p>Wear gloves and boots when cleaning. Floodwater carries sewage and bacteria. Disinfect all surfaces.</p></div>
+      <div class="tip-card"><div class="tip-icon">🦟</div><h3>Prevent Disease</h3><p>Standing water breeds mosquitoes. Use repellent, drain all stagnant water, and watch for cholera/dengue symptoms.</p></div>
+      <div class="tip-card"><div class="tip-icon">📸</div><h3>Document Damage</h3><p>Take photos of all damage before cleaning for insurance or government compensation claims.</p></div>
+      <div class="tip-card"><div class="tip-icon">🧠</div><h3>Mental Health</h3><p>Floods are traumatic. Talk to family, community, or a counsellor. It is okay to ask for help.</p></div>
+    </div>
+
+    <!-- KIT -->
+    <div class="phase-content" id="phase-kit">
+      <p style="color:var(--sand);margin-bottom:1.5rem;line-height:1.8;">Pack this <strong style="color:var(--water)">Emergency Kit</strong> before flood season. Keep it near your exit. 🎒</p>
+      <div class="kit-grid" style="grid-column:1/-1">
+        <div class="kit-item"><span>💧</span><span>3 litres of water per person per day (3 days supply)</span></div>
+        <div class="kit-item"><span>🍱</span><span> FOOD biscuits, dry fruit, canned items</span></div>
+        <div class="kit-item"><span>🔦</span><span>Flashlight + extra batteries</span></div>
+        <div class="kit-item"><span>🩹</span><span>First aid kit with basic medicines and bandages</span></div>
+        <div class="kit-item"><span>📄</span><span>Copies of CNIC, property papers, documents</span></div>
+        <div class="kit-item"><span>📱</span><span>Fully charged power bank</span></div>
+        <div class="kit-item"><span>💊</span><span>Prescription medicines (7 day supply)</span></div>
+        <div class="kit-item"><span>🧥</span><span>Warm clothes + rain gear for each person</span></div>
+        <div class="kit-item"><span>💰</span><span>Emergency cash (ATMs may not work)</span></div>
+        <div class="kit-item"><span>🪣</span><span>Plastic bags, rope, whistle, basic tools</span></div>
+        <div class="kit-item"><span>👶</span><span>Baby supplies if needed — milk, diapers</span></div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="reports">
+  <div class="section-inner">
+    <p class="section-tag">  Community Reports</p>
+    <h2 class="section-title">Report a Flood</h2>
+    <p class="section-desc">See something? Report it. Tell what is happening near you?</p>
+
+    <div class="report-layout">
+      <!-- FORM -->
+      <div>
+        <div class="report-form">
+          <div class="form-group">
+            <label>📍 Your Location / City</label>
+            <input type="text" id="r-loc" placeholder="e.g. Sukkur, Sindh" />
+          </div>
+          <div class="form-group">
+            <label> Severity</label>
+            <select id="r-sev">
+              <option value="high">🔴 High — Major flooding, evacuate now</option>
+              <option value="medium">🟡 Medium — Roads flooded, avoid area</option>
+              <option value="low">🔵 Low — Minor flooding, be cautious</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>  What is happening?</label>
+            <textarea id="r-desc" placeholder="Describe what you see water level, affected areas, roads blocked..."></textarea>
+          </div>
+          <div class="form-group">
+            <label> Your Name (optional)</label>
+            <input type="text" id="r-name" placeholder="Anonymous" />
+          </div>
+          <button class="btn btn-primary" onclick="submitReport()" style="align-self:flex-start"> Submit Report</button>
+        </div>
+      </div>
+
+      
+      <div class="reports-feed">
+        <h3>🔴 Live Community Reports</h3>
+        <div id="reports-list">
+          <div class="report-card">
+            <div class="rc-top"><span class="rc-loc">📍Sindh  </span><span class="rc-time">2 hrs ago</span></div>
+            <span class="rc-severity sev-high">🔴 HIGH</span>
+            <p class="rc-desc">Major flooding .</p>
+          </div>
+          <div class="report-card">
+            <div class="rc-top"><span class="rc-loc">📍 Nowshera, KPK</span><span class="rc-time">5 hrs ago</span></div>
+            <span class="rc-severity sev-medium">🟡 MEDIUM</span>
+            <p class="rc-desc">Main bazaar road flooded. Water is high. Avoid GT Road near river bridge.</p>
+          </div>
+          <div class="report-card">
+            <div class="rc-top"><span class="rc-loc">📍 Rajanpur, Punjab</span><span class="rc-time">8 hrs ago</span></div>
+            <span class="rc-severity sev-low">🔵 LOW</span>
+            <p class="rc-desc">Light flooding in low lying areas..</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="map-section">
+  <div class="section-inner">
+    <p class="section-tag"> Location Finder</p>
+    <h2 class="section-title">Find Your Location</h2>
+    <p class="section-desc">Enter any city or area to open it on Google Maps and check your surroundings. 📍</p>
+
+    <div class="map-search">
+      <input type="text" id="map-input" placeholder="e.g. Karachi" />
+      <button onclick="openMap()"> Open in Maps</button>
+    </div>
+    <p class="map-hint"> Tip: Search your city to see rivers, roads, and evacuation routes near you.</p>
+
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(79,195,247,0.2);border-radius:16px;padding:2rem;text-align:center;color:var(--sand);">
+      <div style="font-size:3rem;margin-bottom:1rem;">🗺️</div>
+      <p>Enter a location above and click <strong style="color:var(--water)">Open in Maps</strong></p>
+      <p style="font-size:0.85rem;margin-top:0.5rem;">Google Maps will open in a new tab with your location</p>
+    </div>
+
+   
+    <div style="margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:0.6rem;">
+      <p style="color:var(--sand);font-size:0.85rem;width:100%;margin-bottom:0.3rem;">Countries with high flood risk:</p>
+      <button class="btn btn-outline" style="font-size:1rem;padding:0.4rem 1rem;" onclick="quickMap('China')">China</button>
+      <button class="btn btn-outline" style="font-size:1rem;padding:0.4rem 1rem;" onclick="quickMap('India')">India</button>
+      <button class="btn btn-outline" style="font-size:1rem;padding:0.4rem 1rem;" onclick="quickMap('Bangladesh')">Bangladesh</button>
+      <button class="btn btn-outline" style="font-size:1rem;padding:0.4rem 1rem;" onclick="quickMap('Pakistan')">Pakistan</button>
+      <button class="btn btn-outline" style="font-size:1rem;padding:0.4rem 1rem;" onclick="quickMap('Indonesia')">Indonesia</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">WaveDefense 🌊</div>
+  <p class="footer-meta">
+    <strong>Emergency Helplines:</strong> NDMA: 1700 &nbsp;|&nbsp; Rescue: 1122 &nbsp;|&nbsp; Edhi: 115 &nbsp;|&nbsp; Chhipa: 1020<br/><br/>
+   
+    <strong>Creator:</strong> Haniya Zeeshan  &nbsp;|&nbsp; <strong>School:</strong> Silver oaks &nbsp;|&nbsp; <strong>Grade:</strong> 12th 
+
+  </p>
+</footer>
+
+<script>
+ 
+  function showPhase(phase, btn) {
+    document.querySelectorAll('.phase-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.phase-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById('phase-' + phase).classList.add('active');
+    btn.classList.add('active');
+  }
+
+ 
+  function openMap() {
+    const loc = document.getElementById('map-input').value.trim();
+    if (!loc) { alert('Please enter a location first! 📍'); return; }
+    window.open('https://www.google.com/maps/search/' + encodeURIComponent(loc), '_blank');
+  }
+  function quickMap(loc) {
+    window.open('https://www.google.com/maps/search/' + encodeURIComponent(loc), '_blank');
+  }
+  document.getElementById('map-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') openMap();
+  });
+
+  // Reports
+  function submitReport() {
+    const loc  = document.getElementById('r-loc').value.trim();
+    const sev  = document.getElementById('r-sev').value;
+    const desc = document.getElementById('r-desc').value.trim();
+    const name = document.getElementById('r-name').value.trim() || 'Anonymous';
+    if (!loc || !desc) { alert('Please fill in location and description! 📝'); return; }
+
+    const sevMap = {
+      high:   { label: '🔴 HIGH',   cls: 'sev-high' },
+      medium: { label: '🟡 MEDIUM', cls: 'sev-medium' },
+      low:    { label: '🔵 LOW',    cls: 'sev-low' }
+    };
+    const s = sevMap[sev];
+    const card = document.createElement('div');
+    card.className = 'report-card';
+    card.innerHTML = `
+      <div class="rc-top">
+        <span class="rc-loc">📍 ${loc}</span>
+        <span class="rc-time">Just now — ${name}</span>
+      </div>
+      <span class="rc-severity ${s.cls}">${s.label}</span>
+      <p class="rc-desc">${desc}</p>`;
+
+    const list = document.getElementById('reports-list');
+    list.insertBefore(card, list.firstChild);
+
+    document.getElementById('r-loc').value = '';
+    document.getElementById('r-desc').value = '';
+    document.getElementById('r-name').value = '';
+    alert(' Report submitted! Thank you for keeping your community safe.');
+  }
+
+  // Nav active highlight on scroll
+  const sections = document.querySelectorAll('section[id], div[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => { if (window.scrollY >= s.offsetTop - 80) current = s.id; });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+</script>
+</body>
+</html>
